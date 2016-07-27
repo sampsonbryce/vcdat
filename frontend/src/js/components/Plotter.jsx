@@ -2,6 +2,10 @@ import React from 'react'
 import Plot from './Plot.jsx'
 
 var Plotter = React.createClass({
+    shouldComponentUpdate(nextProps, nextState){
+        console.log('plotting?', !nextProps.plotting)
+        return !nextProps.plotting;
+    },
     initDrop() {
         $('.cell-stack-bottom').droppable({
             accept: '.draggable-list-item',
@@ -53,7 +57,7 @@ var Plotter = React.createClass({
                         for (var i = 0; i < this.props.cell.plots.length; i++) {
                             let plot = this.props.cell.plots[i];
                             let plot_name = 'plot' + this.props.row + this.props.col + i;
-                            plotters.push(<Plot key={i} plotName={plot_name} plot={plot} plotIndex={i} swapVariableInPlot={this.props.swapVariableInPlot.bind(this, this.props.row, this.props.col)} swapGraphicsMethodInPlot={this.props.swapGraphicsMethodInPlot.bind(this, this.props.row, this.props.col)} swapTemplateInPlot={this.props.swapTemplateInPlot.bind(this, this.props.row, this.props.col)}/>)
+                            plotters.push(<Plot key={i} plotName={plot_name} plot={plot} plotIndex={i} swapVariableInPlot={this.props.swapVariableInPlot.bind(this, this.props.row, this.props.col)} swapGraphicsMethodInPlot={this.props.swapGraphicsMethodInPlot.bind(this, this.props.row, this.props.col)} swapTemplateInPlot={this.props.swapTemplateInPlot.bind(this, this.props.row, this.props.col)} setImage={this.props.setImage} />)
                         }
                         return plotters;
                     })()}

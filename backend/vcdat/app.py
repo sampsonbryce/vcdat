@@ -1,10 +1,11 @@
 import os
 import vcs, cdms2
-import json
+import json, base64
 from flask import Flask, send_from_directory, request
 from GraphicsMethods import get_gm
 from Templates import get_t
 from Files import getFilesObject
+from Plot import vcs_plot
 app = Flask(__name__, static_url_path='')
 
 _ = vcs.init()
@@ -64,9 +65,7 @@ def get_initial_file_tree():
 @app.route("/browseFiles")
 def browse_files():
     start_path = request.args.get('path') + '/'
-    print 'start_path', start_path
     file_obj = getFilesObject(start_path)
-    print 'got files in app'
     return json.dumps(file_obj)
 
 @app.route("/loadVariablesFromFile")
@@ -74,6 +73,28 @@ def load_variables_from_file():
     file_path = request.args.get('path')
     f = cdms2.open(file_path);
     return json.dumps({'variables': f.listvariables()})
+
+@app.route('/plot', methods=['POST'])
+def plot():
+    json_string = request.form.get('plot_data')
+    plot_data = json.loads(json_string)
+    variables = plot_data['variables']
+    graphics_method_parent = str(plot_data['graphics_method_parent'])
+    graphics_method = str(plot_data['graphics_method'])
+    template = str(plot_data['template'])
+    width = int(plot_data['width'])
+    height = int(plot_data['height'])
+    assert template is not None
+    assert variables is not None
+    assert graphics_method is not None
+    assert graphics_method_parent is not None
+    assert width is not None
+    assert height is not None
+
+    image_path = vcs_plot(variables, graphics_method_parent, graphics_method, template, width, height)
+    with open(image_path, 'rb') as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+    return encoded_string
 
 if __name__ == "__main__":
     app.run()

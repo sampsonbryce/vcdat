@@ -117,11 +117,15 @@ const cachedFilesReducer = (state = {}, action) => {
     }
 }
 
-const varListReducer = (state = [], action) => {
+const varListReducer = (state = {}, action) => {
     switch (action.type) {
         case 'LOAD_VARIABLES':
-            var new_list = jQuery.extend(true, [], state);
-            new_list.push(...action.var_list);
+            var new_list = jQuery.extend(true, {}, state);
+            action.var_list.forEach((var_obj) => {
+                console.log('loading var', var_obj);
+                let key = Object.keys(var_obj)[0];
+                new_list[key] = var_obj[key];
+            })
             return new_list;
         default: return state
     }
@@ -317,8 +321,12 @@ export default undoableReducer
 /*
 Tree Structure:
     {
-        cached_files: {filename: {path, variables}},
-        variables: [],
+        cached_files: {filename: {filepath, variables}},
+        variables: {var_name: {
+                        cdms_var_name,
+                        filename,
+                    }
+                },
         graphics_methods: [],
         templates: [],
         cur_sheet: 0,

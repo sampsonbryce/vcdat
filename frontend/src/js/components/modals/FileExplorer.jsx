@@ -84,7 +84,7 @@ var FileExplorer = React.createClass({
     cacheFile(event) {
         let selected = $('#file-tree').find('.active');
         console.log('selected', selected);
-        let path = selected.attr('data-path') + '/' + selected.text();
+        let path = selected.attr('data-path') + selected.text();
         this.filepath = path;
         this.filename = selected.text();
         $.get('loadVariablesFromFile', {'path': path}).then((obj) => {

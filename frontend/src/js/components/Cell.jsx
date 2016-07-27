@@ -5,6 +5,12 @@ import Actions from '../actions/Actions.js'
 import Plotter from './Plotter.jsx'
 
 var Cell = React.createClass({
+    getInitialState(){
+        this.plotting = false;
+        return {
+            'image': '',
+        }
+    },
     resizeCells() {
         $('.cell-image').each((index, el) => {
             el = $(el);
@@ -22,15 +28,24 @@ var Cell = React.createClass({
             this.resizeCells();
         })
     },
+    componentDidUpdate(){
+        this.plotting = false;
+    },
+    setImage(image){
+        let state = this.state;
+        state.image = image;
+        this.plotting = true;
+        this.setState(state);
+    },
     render() {
         this.cell = this.props.cells[this.props.row][this.props.col];
         this.row = this.props.row;
         this.col = this.props.col;
         return (
             <div className='cell' data-row={this.props.row} data-col={this.props.col}>
-                <Plotter cell={this.cell} row={this.props.row} col={this.props.col} addPlot={this.props.addPlot} swapVariableInPlot={this.props.swapVariableInPlot} swapGraphicsMethodInPlot={this.props.swapGraphicsMethodInPlot} swapTemplateInPlot={this.props.swapTemplateInPlot}/>
+                <Plotter cell={this.cell} row={this.props.row} col={this.props.col} addPlot={this.props.addPlot} swapVariableInPlot={this.props.swapVariableInPlot} swapGraphicsMethodInPlot={this.props.swapGraphicsMethodInPlot} swapTemplateInPlot={this.props.swapTemplateInPlot} setImage={this.setImage} plotting={this.plotting}/>
                 <div className='cell-stack-top'>
-                    <img className='cell-image' src='deps/clt_image.png' alt='climate_data'></img>
+                    <img className='cell-image' src={'data:image/png;base64,' + this.state.image} alt='climate_data'></img>
                     <div className={'border border-' + this.props.row + this.props.col}></div>
                 </div>
             </div>
